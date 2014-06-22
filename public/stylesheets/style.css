@@ -1,0 +1,90 @@
+
+
+.video_container {
+    border: 1px solid silver;
+    height: fit-content;
+    margin: 0;
+    position: relative;
+}
+
+.layer1 {
+    //position: absolute;
+    z-index: 1;
+    //left: 0;
+    top: 0;
+    height: fit-content;
+}
+
+.layer2 {
+    position: absolute;
+    //z-index: 2;
+    //left: 0;
+    top: 0;
+    height: fit-content;
+    border: 1px solid green;
+}
+
+/*button.answer {
+    font-size: 18em !important;
+    height: 20px !important;
+}*/
+
+button.waitForRival {
+    border-radius: 30px;
+    background-color: lightskybluehtblow;
+    height: 40px;
+    width: 80px;
+    //font-size: 18em !important;
+    //height: 20px !important;
+}
+
+button.yourTurn {
+    border-radius: 30px;
+    background-color: lime;
+    height: 40px;
+    width: 80px;
+    //font-size: 18em !important;
+    //height: 20px !important;
+}
+
+#header {
+    display: block;
+    left: 0;
+    /*    background-image:url('images/header.png');*/
+    /*    background-size: 100%;
+        background-size:80px 60px;*/
+    /*    background-color: white;*/
+    /*    background-repeat: no-repeat; 
+    */      position: left top;
+    /*
+            padding-top:68px; 
+            margin-bottom:50px; */
+}
+#header-photo {
+    width: 100%;
+    z-index: 0;
+    left: 0;
+    position: absolute;
+}
+
+#progres_bar{
+    left: 0;
+    z-index: 1;
+    position: absolute;
+    width: 70%;
+/*    margin-bottom:20px;*/
+bottom:-5px;
+}
+button.newGame {
+    border-radius: 30px;
+    background-color: plum;
+    height: 40px;
+    width: 80px;
+    //font-size: 18em !important;
+    //height: 20px !important;
+}
+
+img.profile {
+    border: solid black thin;
+    border-radius: 100px;
+}
