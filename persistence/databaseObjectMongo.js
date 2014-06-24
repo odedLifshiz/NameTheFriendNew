@@ -86,5 +86,22 @@ databaseObjectMongo.prototype.findHallOfFamePlayers = function(callback){
 };
 
 
+databaseObjectMongo.prototype.getLastIndex = function(callback){
+	var options = {
+		"limit": 1,
+		"sort": [['matchupId','desc']]
+	};
+    this.connection.collection('matchups').find({}, options).toArray(function (err, items) {
+		callback(err, items[0].matchupId);
+    });
+};
+
+databaseObjectMongo.prototype.addNewMatchup = function(newMatchup, callback){
+	this.connection.collection('matchups').insert(newMatchup, function(err, result){
+		callback(err, result);
+	});
+};
+
+
 
 module.exports = databaseObjectMongo;

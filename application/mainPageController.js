@@ -61,6 +61,24 @@ mainPageController.prototype.addNewGame = function(req, res){
 };
 
 
+
+mainPageController.prototype.addNewMatchup = function(req, res){
+	var currentPlayerId = parseInt(req.param("currentPlayerId"));
+	var rivalId = parseInt(req.param("rivalId"));
+	
+	this.businessLayer.addNewMatchup(currentPlayerId, rivalId , function(err, result) {
+		if (err) {
+			res.send(500, err);
+		} 
+		else {
+			console.log("ctrlr: " + result);
+			res.json(result);	
+		};
+	});	
+};
+
+
+
 mainPageController.prototype.findGame = function(req, res){
 	var matchupId = parseInt(req.param("matchupId"));
 	this.businessLayer.findGame(matchupId, function(err, result) {
@@ -114,12 +132,21 @@ mainPageController.prototype.findHallOfFamePlayers = function(req, res){
 		if (err) {
 			res.send(500, err);
 		} else {
-			console.log("Ctrl: found em hall of famers");
 			res.json(result);
 		}
 	});	
 };
 
+mainPageController.prototype.findPlayersToPlayWith = function(req, res){
+	var playerId = parseInt(req.param("playerId"));
+	this.businessLayer.findPlayeraToPlayWith(playerId, function(err, result) {
+		if (err) {
+			res.send(500, err);
+		} else {
+			res.json(result);
+		}
+	});	
+};
 
 
 

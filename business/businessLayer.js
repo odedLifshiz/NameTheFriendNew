@@ -107,6 +107,43 @@ businessLayer.prototype.findHallOfFamePlayers = function(callback) {
 	});
 };
 
+businessLayer.prototype.findPlayeraToPlayWith = function(playerId, callback) {
+	var playersToPlayWith = [];
+	var me=this;
+	this.databaseObject.findAllPlayerMatchups(playerId, function(err, matchups) {	
+		me.databaseObject.findAllPlayers(function(err, players) {
+			for (indexInPlayers = 0; indexInPlayers < players.length; indexInPlayers++) { 
+				var currentPlayerId = players[indexInPlayers].playerId;				
+				for (i = 0; i < matchups.length; i++) { 
+					if( currentPlayerId != matchups[i].player1Id && currentPlayerId != matchups[i].player2Id) {
+						playersToPlayWith.push(players[indexInPlayers]);
+					}
+				}		
+			};
+			callback(err, playersToPlayWith);		
+		});	
+	});
+};
+
+
+businessLayer.prototype.addNewMatchup = function(currentPlayerId, rivalId, callback) {
+	var me=this;
+	this.databaseObject.getLastIndex( function (err, lastIndex) {
+		var nextIndex=parseInt(lastIndex) + 1;
+		var buildNewMatchup = { 
+						   "matchupId"      : nextIndex,
+						   "player1Id"      : currentPlayerId,
+						   "player2Id"      : rivalId,
+						   "scorePlayer1"   : 0,
+						   "scorePlayer2"   : 0,
+						   "matchupStatus"  : currentPlayerId
+						 };
+		me.databaseObject.addNewMatchup( buildNewMatchup, function(err, result) {
+			callback(err, nextIndex);
+		});			
+	});
+};
+
 
 
 module.exports = businessLayer;

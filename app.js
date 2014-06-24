@@ -43,11 +43,14 @@ MongoClient.connect("mongodb://" + config.url + ":" + config.port+ "/" + config.
 	myApp.mainPageController = new mainPageController(myApp);
 
 	app.get('/players', myApp.mainPageController.findAllPlayers.bind(myApp.mainPageController));
+	app.get('/playersToPlayWith/:playerId', myApp.mainPageController.findPlayersToPlayWith.bind(myApp.mainPageController));
 	app.get('/players/:playerId', myApp.mainPageController.findPlayer.bind(myApp.mainPageController));
 	app.get('/hallOfFame', myApp.mainPageController.findHallOfFamePlayers.bind(myApp.mainPageController));
 	
 	app.get('/matchups', myApp.mainPageController.findAllMatchups.bind(myApp.mainPageController));
 	app.get('/matchups/:playerId', myApp.mainPageController.findAllPlayerMatchups.bind(myApp.mainPageController));
+	app.get('/matchups/:currentPlayerId/:rivalId', myApp.mainPageController.addNewMatchup.bind(myApp.mainPageController));
+	
 	
 	app.post('/games', myApp.mainPageController.addNewGame.bind(myApp.mainPageController));
 	app.get('/games/:matchupId', myApp.mainPageController.findGame.bind(myApp.mainPageController));
@@ -55,7 +58,7 @@ MongoClient.connect("mongodb://" + config.url + ":" + config.port+ "/" + config.
 
 	
 	http.createServer(app).listen(app.get('port'), function(){
-	  console.log("Express server listening on port " + app.get('port'));
+		console.log("Express server listening on port " + app.get('port'));
 	});
 
   }

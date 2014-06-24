@@ -21,9 +21,7 @@ function logout(){
 function showHallOfFame(){
 	var table = document.getElementById("hallOfFameBar");
 	table.innerHTML = "";		
-	debugger;
 	$.getJSON( '/hallOfFame', function( hallOfFamePlayers ) {
-		debugger;
 		window.location = "#hallOfFame";
 		$("#hallOfFameBar").append("<table width=\"100%\"><th align=\"center\">" + 
 		"<td>Player</td><td>Score</td></th>");
@@ -145,15 +143,11 @@ function showFriendsZone(InviteOrNot) {
     var htmlCode = "";
     window.location = "#friends";
     document.getElementById("friends_table").innerHTML = "";
-    var friendsInGame = [{"rivalId": "1", "rivalName": "or maoz", "rivalImg": "https:\/\/graph.facebook.com\/or.maoz\/picture\/"},
-        {"rivalId": "2", "rivalName": "danny nave", "rivalImg": "https:\/\/graph.facebook.com\/danny.nave\/picture\/"}];
-    var friendsNotInGame = [{"rivalId": "1", "rivalName": "oran cohen", "rivalImg": "https:\/\/graph.facebook.com\/oran.cohen\/picture\/"},
-        {"rivalId": "2", "rivalName": "danit nall", "rivalImg": "https:\/\/graph.facebook.com\/danit.nave\/picture\/"}];
-    if (InviteOrNot) {
-        buildFriendsTable(friendsNotInGame, InviteOrNot);
-    } else {
-        buildFriendsTable(friendsInGame, InviteOrNot);
-    }
+    getPlayersToPlayWith(currentPlayerId, function (playersToPlayWith) {
+		buildFriendsTable(playersToPlayWith, false);
+	});
+
+
 }
 
 
@@ -185,37 +179,33 @@ function buildFriendsBar(matchup) {
  * Display user's friends from facebook. 
  * If they are allready registerd to the game (toInvite = false) start a new game, 
  * else Invite them to register to the app.  
- * @param {type} matchesData
+ * @param {type} playersNotInMatchups
  * @param {type} toInvite
  * @returns {undefined}
  */
-function buildFriendsTable(matchesData, toInvite) {
-
+function buildFriendsTable(playersNotInMatchups, toInvite) {
+	
     document.getElementById("friends_bar").style.display = "block";
-    // document.getElementById("matchups_tableNew").style.display = "none";
     document.getElementById("friends_table").innerHTML = "";
     var table = document.getElementById("friends_table");
-    var numOfMatchups = matchesData.length;
-    /*//alert(numOfMatchups);
-     //alert(table.innerHTML);*/
+    var numOfMatchups = playersNotInMatchups.length;
     var index;
     for (index = 0; index < numOfMatchups; ++index) {
 
         var text = "";
         var buttonProperty = "";
-        // Decide button
         if (toInvite) {
             text = "Invite";
             buttonProperty = "onClick=\"InviteFriend()\"";
         } else {
             text = "Play";
-            buttonProperty = "onClick=\"startGameWithNewPlayer(" + matchesData[index]["rivalId"] + ")\"";
+            buttonProperty = "onClick=\"startGameWithNewPlayer(" + playersNotInMatchups[index]["playerId"] + ")\"";
         }
 
         $("#friends_table").append("<tr align=\"center\">" +
                 "<td><button " + buttonProperty + " >" + text + "</button></td>" +
-                "<td><img src=\"" + matchesData[index]["rivalImg"] + "\" />" +
-                "<br />" + matchesData[index]["rivalName"] + "</td></tr>");
+                "<td><img src=\"" + getPictureURLFromFacebookId(playersNotInMatchups[index]["playerId"]) + "\" />" +
+                "<br />" + playersNotInMatchups[index]["name"] + "</td></tr>");
     }
 }
 
@@ -231,7 +221,9 @@ function inviteFriend() {
 
 
 function startGameWithNewPlayer(rivalId) {
-    window.location = "#step1";
+	createNewMatchup(currentPlayerId, rivalId, function(newMatchupId) {
+		createNewGame(newMatchupId, rivalId);
+	});
 }
 
 function playerTurn() {
@@ -250,13 +242,13 @@ function handleImageSelected(matchupId,initiatorId,rivalId) {
 
         fileReader.onload = function(fileLoadedEvent) {
 			var imageSelectedAsBase64 = fileLoadedEvent.target.result; // <--- data: base64 
-			moveToStep2(matchupId,initiatorId,rivalId,imageSelectedAsBase64);
+			moveToStep2(matchupId, initiatorId, rivalId, imageSelectedAsBase64);
         };
 		
         fileReader.readAsDataURL(fileToLoad);
     }
 }
-function moveToStep2(matchupId,initiatorId,rivalId,imageSelectedAsBase64) {
+function moveToStep2(matchupId, initiatorId, rivalId, imageSelectedAsBase64) {
 	var imageSrc=document.getElementById("imageToBlur");
 	imageSrc.setAttribute("src", imageSelectedAsBase64);    
 	
@@ -309,11 +301,11 @@ function getNewGameData(){
 function playTurn(matchupId) {
 	getGame(matchupId, function(gameData){
 		$("#blurredImage").attr("src",gameData.blurredImage);
-		$("#option1").attr("value",gameData.options[0]);		
-		$("#option2").attr("value",gameData.options[1]);		
-		$("#option3").attr("value",gameData.options[2]);		
-		$("#option4").attr("value",gameData.options[3]);
-		$("#matchupId").attr("value",gameData.matchupId);
+		$("#option1").attr("value", gameData.options[0]);		
+		$("#option2").attr("value", gameData.options[1]);		
+		$("#option3").attr("value", gameData.options[2]);		
+		$("#option4").attr("value", gameData.options[3]);
+		$("#matchupId").attr("value", gameData.matchupId);
 		window.location = "#yourTurn";
 	});
 }
@@ -403,4 +395,19 @@ function updateMatchupStatus(matchupId,matchupStatusToUpdateTo){
 	}).done(function( response ) {
 		console.log(response.msg);
 	});
+}
+
+function createNewMatchup(currentPlayerId, rivalId, callback){
+
+	$.getJSON( '/matchups/' + currentPlayerId + "/" + rivalId, function( newMatchupId ) {
+		console.log("aaaaaaaaaaaaaaaaaa");
+		callback(newMatchupId);
+	});	
+}
+
+function getPlayersToPlayWith(currentPlayerId, callback) {
+	$.getJSON( '/playersToPlayWith/' + currentPlayerId, function( playersToPlayWith ) {
+		callback(playersToPlayWith);
+	});		
+
 }
