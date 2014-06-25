@@ -148,6 +148,17 @@ mainPageController.prototype.findPlayersToPlayWith = function(req, res){
 	});	
 };
 
+mainPageController.prototype.findMatchupData = function(req, res){
+	var matchupId = parseInt(req.param("matchupId"));
+	this.businessLayer.findMatchupData(matchupId, function(err, result) {
+		if (err) {
+			res.send(500, err);
+		} else {
+			res.json(result);
+		}
+	});	
+};
+
 
 
 

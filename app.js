@@ -48,6 +48,7 @@ MongoClient.connect("mongodb://" + config.url + ":" + config.port+ "/" + config.
 	app.get('/hallOfFame', myApp.mainPageController.findHallOfFamePlayers.bind(myApp.mainPageController));
 	
 	app.get('/matchups', myApp.mainPageController.findAllMatchups.bind(myApp.mainPageController));
+	app.get('/matchupData/:matchupId', myApp.mainPageController.findMatchupData.bind(myApp.mainPageController));
 	app.get('/matchups/:playerId', myApp.mainPageController.findAllPlayerMatchups.bind(myApp.mainPageController));
 	app.get('/matchups/:currentPlayerId/:rivalId', myApp.mainPageController.addNewMatchup.bind(myApp.mainPageController));
 	

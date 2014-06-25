@@ -40,7 +40,7 @@ businessLayer.prototype.addNewGame = function(game, callback) {
 			});
 		}
 		else {
-			console.log("could not add new game");
+			console.log("could not add new game, the error was: " + err);
 		}
 	});
 };
@@ -136,7 +136,7 @@ businessLayer.prototype.addNewMatchup = function(currentPlayerId, rivalId, callb
 						   "player2Id"      : rivalId,
 						   "scorePlayer1"   : 0,
 						   "scorePlayer2"   : 0,
-						   "matchupStatus"  : currentPlayerId
+						   "matchupStatus"  : 0
 						 };
 		me.databaseObject.addNewMatchup( buildNewMatchup, function(err, result) {
 			callback(err, nextIndex);
@@ -144,6 +144,22 @@ businessLayer.prototype.addNewMatchup = function(currentPlayerId, rivalId, callb
 	});
 };
 
+
+businessLayer.prototype.findMatchupData = function(matchupId, callback) {
+	var me=this;
+	this.databaseObject.findMatchup(matchupId, function (err, matchup) {
+		var me2=me;
+		me.databaseObject.findPlayer(matchup.player1Id, function(err, player1) {
+			me2.databaseObject.findPlayer(matchup.player2Id, function(err, player2) {
+				result = { "matchup" : matchup,
+						   "player1" : player1,
+						   "player2" : player2
+				};
+				callback(err, result);
+			});
+		});
+	});
+};
 
 
 module.exports = businessLayer;

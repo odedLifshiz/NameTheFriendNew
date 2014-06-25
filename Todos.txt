@@ -12,5 +12,6 @@ TODO'S
 8) Consider - allow taking in a picture and not just choosing from gallery.
 9) Create game vs players listed in the app and move to matchup table.
 10) Invite friends through facebook.
+11) 
 11) Handle create new game update as soon as created.
 12) Randomly display options for correct answer. 

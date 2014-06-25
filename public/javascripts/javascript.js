@@ -26,12 +26,12 @@ function showHallOfFame(){
 		$("#hallOfFameBar").append("<table width=\"100%\"><th align=\"center\">" + 
 		"<td>Player</td><td>Score</td></th>");
 		hallOfFamePlayers.forEach(function(hallOfFamePlayer) {
-			buildSingelLineOfHallOfFame(hallOfFamePlayer);
+			buildSingleLineOfHallOfFame(hallOfFamePlayer);
 		});	
 	});
 }
 	
-function buildSingelLineOfHallOfFame(hallOfFamePlayer) {
+function buildSingleLineOfHallOfFame(hallOfFamePlayer) {
 	var linkToPicure=getPictureURLFromFacebookId(hallOfFamePlayer["playerId"]);					  
 	$("#hallOfFameBar").append("<tr align=\"center\">" +
 		"<td><img src=\"" +linkToPicure+ "\" />&nbsp"+ "<br>"+ hallOfFamePlayer["name"]  +"<br> "+"</td>" +
@@ -74,59 +74,63 @@ function buildMatchupsTable() {
 	getAllPlayerMatchups(currentPlayerId, function(matchups){
 		var table = document.getElementById("matchups_tableNew");
 		table.innerHTML = "";
-		matchups.forEach(function(matchup) {
-			buildSingelLineOfMatchupsTable(matchup);
-		});
+		matchups.forEach( function(matchup) {
+			getMatchupData(matchup.matchupId, function(result) {
+				buildSingleLineOfMatchupsTable(result);
+			});
+		});		
 	});
 }
 
 	
-function buildSingelLineOfMatchupsTable(matchupData){
-	// when we have a matchup data we want the data of the current logged in player on the right
-	player1Id=matchupData["player1Id"];
-	player2Id=matchupData["player2Id"];
-	if(player1Id === currentPlayerId){
-		rivalId=player2Id;
+function buildSingleLineOfMatchupsTable(result){
+	
+	matchup=result.matchup;
+	if(result.player1.playerId === currentPlayerId) {
+		currentPlayer = result.player1;
+		rivalPlayer = result.player2;
+		scoreOfCurrentPlayerInMatchup = matchup.scorePlayer1;
+		rivalScoreInMatchup = matchup.scorePlayer2;
 	}
 	else {
-		rivalId=player1Id;
+		currentPlayer = result.player2;
+		rivalPlayer = result.player1;
+		scoreOfCurrentPlayerInMatchup = matchup.scorePlayer2;
+		rivalScoreInMatchup = matchup.scorePlayer1;
 	}
 
-	getPlayerData(currentPlayerId, function (currentPlayerData){
-		getPlayerData(rivalId, function (rivalPlayerData){
-			var text = ""; 
-			var buttonClass = "";
-			var textValue = "";
-			var buttonProperty = "";
-			
-			if (matchupData["matchupStatus"] === matchupStatusOfNewGame ) {
-				buttonText = "New Game";
-				buttonClass = "newGame";
-				buttonProperty = "onClick=\"createNewGame(" + matchupData["matchupId"] +","+rivalId + ")\"";
-			}
-			else if (matchupData["matchupStatus"] === currentPlayerId) {
-				buttonText = "Your Turn";
-				buttonClass = "yourTurn";
-				buttonProperty = "onClick=\"playTurn(" + matchupData["matchupId"] + ")\"";
-			}
-			else if (matchupData["matchupStatus"] === rivalId) {
-				buttonText = "Wait";
-				buttonClass = "waitForRival";
-				buttonProperty = "disabled";
-			}
-			else {
-				buttonText = "Error" + matchupData["matchupStatus"];
-			}
+	var text = ""; 
+	var buttonClass = "";
+	var textValue = "";
+	var buttonProperty = "";
+	
+	if (matchup.matchupStatus === matchupStatusOfNewGame ) {
+		buttonText = "New Game";
+		buttonClass = "newGame";
+		buttonProperty = "onClick=\"createNewGame(" + matchup.matchupId +"," + rivalPlayer.playerId + ")\"";
+	}
+	else if (matchup.matchupStatus === currentPlayerId) {
+		buttonText = "Your Turn";
+		buttonClass = "yourTurn";
+		buttonProperty = "onClick=\"playTurn(" + matchup.matchupId + ")\"";
+	}
+	else if (matchup.matchupStatus === rivalPlayer.playerId ) {
+		buttonText = "Wait";
+		buttonClass = "waitForRival";
+		buttonProperty = "disabled";
+	}
+	else {
+		buttonText = "Error: " + matchup.matchupStatus;
+	}
 
-			$("#matchups_tableNew").append("<tr align=\"center\">" +
-					"<td><button " + buttonProperty + " class=\"" + buttonClass + "\">" + buttonText + "</button></td>" +
-					"<td>"+currentPlayerData["name"]+"<br/>" + matchupData["scorePlayer1"] + "</td>" +
-					"<td>:</td><td>" +
-					"<td>" + rivalPlayerData["name"] + "<br />" + matchupData["scorePlayer2"] + "</td>" +
-					"<td><img src=\"" + getPictureURLFromFacebookId(rivalId) + "\" class=\"profile\"/>" +
-					"<br />" + rivalPlayerData["name"] + "</td></tr>");
-		});
-	});
+	$("#matchups_tableNew").append("<tr align=\"center\">" +
+			"<td><button " + buttonProperty + " class=\"" + buttonClass + "\">" + buttonText + "</button></td>" +
+			"<td>"+currentPlayer.name+"<br/>" + scoreOfCurrentPlayerInMatchup + "</td>" +
+			"<td>:</td><td>" +
+			"<td>" + rivalPlayer.name + "<br />" + rivalScoreInMatchup + "</td>" +
+			"<td><img src=\"" + getPictureURLFromFacebookId(rivalPlayer.playerId) + "\" class=\"profile\"/>" +
+			"<br />" + rivalPlayer.name + "</td></tr>");
+
 }		
 
 
@@ -199,13 +203,13 @@ function buildFriendsTable(playersNotInMatchups, toInvite) {
             buttonProperty = "onClick=\"InviteFriend()\"";
         } else {
             text = "Play";
-            buttonProperty = "onClick=\"startGameWithNewPlayer(" + playersNotInMatchups[index]["playerId"] + ")\"";
+            buttonProperty = "onClick=\"startGameWithNewPlayer(" + playersNotInMatchups[index].playerId + ")\"";
         }
 
         $("#friends_table").append("<tr align=\"center\">" +
                 "<td><button " + buttonProperty + " >" + text + "</button></td>" +
-                "<td><img src=\"" + getPictureURLFromFacebookId(playersNotInMatchups[index]["playerId"]) + "\" />" +
-                "<br />" + playersNotInMatchups[index]["name"] + "</td></tr>");
+                "<td><img src=\"" + getPictureURLFromFacebookId(playersNotInMatchups[index].playerId) + "\" />" +
+                "<br />" + playersNotInMatchups[index].name + "</td></tr>");
     }
 }
 
@@ -299,6 +303,7 @@ function getNewGameData(){
 
 
 function playTurn(matchupId) {
+	
 	getGame(matchupId, function(gameData){
 		$("#blurredImage").attr("src",gameData.blurredImage);
 		$("#option1").attr("value", gameData.options[0]);		
@@ -382,11 +387,18 @@ function getGame(matchupId,callback){
 
 function getMatchup(matchupId,callback){
 	// first we get the matchup and find the current game id and get it
-	$.getJSON( '/matchups/' + matchupId ,function( matchupData ) {
-		callback(matchupData);
+	$.getJSON( '/matchups/' + matchupId ,function( matchup ) {
+		callback(matchup);
 	});
 }
 
+
+function getMatchupData(matchupId,callback){
+	// first we get the matchup and find the current game id and get it
+	$.getJSON( '/matchupData/' + matchupId ,function( matchup ) {
+		callback(matchup);
+	});
+}
 
 function updateMatchupStatus(matchupId,matchupStatusToUpdateTo){
  $.ajax({
@@ -400,7 +412,6 @@ function updateMatchupStatus(matchupId,matchupStatusToUpdateTo){
 function createNewMatchup(currentPlayerId, rivalId, callback){
 
 	$.getJSON( '/matchups/' + currentPlayerId + "/" + rivalId, function( newMatchupId ) {
-		console.log("aaaaaaaaaaaaaaaaaa");
 		callback(newMatchupId);
 	});	
 }
