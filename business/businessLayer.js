@@ -28,8 +28,56 @@ businessLayer.prototype.findAllPlayerMatchups = function(playerId, callback) {
 	});
 };
 
+function randomIntFromInterval(min, max)
+{
+    return Math.floor(Math.random()*(max - min +1 ) + min);
+}
+
+function getNewCorrectOptionIndex(correctOption, options) {
+	for(index = 0; index < options.length; index++) {
+		if(options[index] === correctOption) {
+			return index;
+		}
+	}
+}
+
+function shuffleArray(array) {
+	var arrayCopy = [];
+	for(index = 0; index < array.length; index++) {
+		random = randomIntFromInterval(0, array.length - index);
+		arrayCopy.push(array[random]);
+		array[random] = array[ array.length - 1 - index ];
+	}
+	array = arrayCopy;
+}
+
+
+businessLayer.prototype.addNewPlayer = function(player, callback) {
+	// set the score of the new player to 0
+	player.score = 0;
+	this.databaseObject.addNewPlayer(player, function(err, result) {
+		if(err===null){
+			callback(err, result);
+		}
+		else {
+			console.log("could not add new player, the error was: " + err);
+		}
+	});
+};
+
+
 businessLayer.prototype.addNewGame = function(game, callback) {
 	var me = this;
+	
+	// change the order of the answers options in the game object
+	var options = game.options;
+	var newCorrectOptionIndex = randomIntFromInterval(0, options.length - 1);
+	var optionInRandom = options[newCorrectOptionIndex];
+	var correctOption = options[game.correctOptionIndex];
+	options[game.correctOptionIndex] = optionInRandom;
+	options[newCorrectOptionIndex] = correctOption;
+	game.correctOptionIndex = newCorrectOptionIndex;
+	
 	this.databaseObject.addNewGame(game, function(err, result) {
 		if(err===null){
 			// if the game was added successfully update the status of parent matchup (change turns)
@@ -75,8 +123,8 @@ businessLayer.prototype.handlePlayerGuess = function(matchupId, answer, callback
 		correctAnswer = game.options[correctOptionIndex];
 		challengerId = game.challengerId;
 		rivalId = game.rivalId
-		originalImage = game.originalImage;
-		var returnObject = { "isPlayerAnswerCorrect" : false, "correctAnswer" : correctAnswer, "originalImage" : originalImage};
+		imageSelectedAsBase64 = game.imageSelectedAsBase64;
+		var returnObject = { "isPlayerAnswerCorrect" : false, "correctAnswer" : correctAnswer, "imageSelectedAsBase64" : imageSelectedAsBase64};
 		if(answer == correctAnswer){
 			returnObject.isPlayerAnswerCorrect = true;
 			playerIdToAddPoint = rivalId;
@@ -85,7 +133,7 @@ businessLayer.prototype.handlePlayerGuess = function(matchupId, answer, callback
 			returnObject.isPlayerAnswerCorrect = false;
 			playerIdToAddPoint = challengerId;	
 		}
-		var me2=me;
+		var me2 = me;
 		me.databaseObject.addPoint(playerIdToAddPoint, function(err, result) {
 			var me3=me2;
 			me2.databaseObject.addPointInMatchup(matchupId, playerIdToAddPoint, function(err, result) {
@@ -107,23 +155,33 @@ businessLayer.prototype.findHallOfFamePlayers = function(callback) {
 	});
 };
 
-businessLayer.prototype.findPlayeraToPlayWith = function(playerId, callback) {
+businessLayer.prototype.findPlayersRegisteredThatIDidntPlayWith = function(playerId, callback) {
 	var playersToPlayWith = [];
 	var me=this;
-	this.databaseObject.findAllPlayerMatchups(playerId, function(err, matchups) {	
-		me.databaseObject.findAllPlayers(function(err, players) {
-			for (indexInPlayers = 0; indexInPlayers < players.length; indexInPlayers++) { 
-				var currentPlayerId = players[indexInPlayers].playerId;				
-				for (i = 0; i < matchups.length; i++) { 
-					if( currentPlayerId != matchups[i].player1Id && currentPlayerId != matchups[i].player2Id) {
-						playersToPlayWith.push(players[indexInPlayers]);
+	
+	this.databaseObject.findAllPlayerMatchups(playerId, function(err, matchups) {
+			me.databaseObject.findAllPlayers(function(err, players) {
+				for (indexInPlayers = 0; indexInPlayers < players.length; indexInPlayers++) { 				
+					var playedWithBefore = false;
+					var currentPlayerId = players[indexInPlayers].playerId;	
+					if( currentPlayerId !== playerId) {
+						// Go over all matchup and check if the current player played.
+						for (i = 0; i < matchups.length; i++) { 
+							if(currentPlayerId === matchups[i].player1Id || currentPlayerId === matchups[i].player2Id) {
+								playedWithBefore = true;
+							}	
+						}	
+						// If the current player haven't played in any matchup - add him to the player to play with list. 
+						if (!playedWithBefore) {
+							playersToPlayWith.push(players[indexInPlayers]);
+						}
 					}
-				}		
-			};
-			callback(err, playersToPlayWith);		
-		});	
-	});
-};
+				};
+				callback(err, playersToPlayWith);		
+			});	
+		});
+}
+
 
 
 businessLayer.prototype.addNewMatchup = function(currentPlayerId, rivalId, callback) {
@@ -160,6 +218,9 @@ businessLayer.prototype.findMatchupData = function(matchupId, callback) {
 		});
 	});
 };
+
+
+
 
 
 module.exports = businessLayer;

@@ -43,9 +43,13 @@ MongoClient.connect("mongodb://" + config.url + ":" + config.port+ "/" + config.
 	myApp.mainPageController = new mainPageController(myApp);
 
 	app.get('/players', myApp.mainPageController.findAllPlayers.bind(myApp.mainPageController));
-	app.get('/playersToPlayWith/:playerId', myApp.mainPageController.findPlayersToPlayWith.bind(myApp.mainPageController));
+	app.post('/players', myApp.mainPageController.addNewPlayer.bind(myApp.mainPageController));	
 	app.get('/players/:playerId', myApp.mainPageController.findPlayer.bind(myApp.mainPageController));
 	app.get('/hallOfFame', myApp.mainPageController.findHallOfFamePlayers.bind(myApp.mainPageController));
+	app.get('/playersRegisteredThatIDidntPlayWith/:playerId', myApp.mainPageController.findPlayersRegisteredThatIDidntPlayWith.bind(myApp.mainPageController));	
+	app.post('/playersNotRegistered/:playerIDs', myApp.mainPageController.playersNotRegistered.bind(myApp.mainPageController));
+
+	
 	
 	app.get('/matchups', myApp.mainPageController.findAllMatchups.bind(myApp.mainPageController));
 	app.get('/matchupData/:matchupId', myApp.mainPageController.findMatchupData.bind(myApp.mainPageController));

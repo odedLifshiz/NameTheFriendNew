@@ -1,28 +1,7 @@
 
-var test = true;
-var currentPlayerId = 0;	
-//var testid=10204510892599438; // oded
-var testid =10204520458916340; // stav
+//var currentPlayerId=1446484204; // oded
+var currentPlayerId=1378982912; // stav
 var matchupStatusOfNewGame=0;
-
-
-$(document).ready(function() {
-	window.fbAsyncInit = function() {
-		
-		FB.init({
-		  appId      : '434847823321597',
-		  xfbml      : true,
-		  version    : 'v2.0'
-		});
-	};
-	(function(d, s, id){
-		var js, fjs = d.getElementsByTagName(s)[0];
-		if (d.getElementById(id)) {return;}
-		js = d.createElement(s); js.id = id;
-		js.src = "//connect.facebook.net/en_US/sdk.js";
-		fjs.parentNode.insertBefore(js, fjs);
-	}(document, 'script', 'facebook-jssdk'));
-});
 
 /**
  * Moves the user to the Matchups zone.
@@ -105,8 +84,9 @@ function buildMatchupsTable() {
 
 	
 function buildSingleLineOfMatchupsTable(result){
-	matchup = result.matchup;
-	if(result.player1.playerId == currentPlayerId) {
+	
+	matchup=result.matchup;
+	if(result.player1.playerId === currentPlayerId) {
 		currentPlayer = result.player1;
 		rivalPlayer = result.player2;
 		scoreOfCurrentPlayerInMatchup = matchup.scorePlayer1;
@@ -124,17 +104,17 @@ function buildSingleLineOfMatchupsTable(result){
 	var textValue = "";
 	var buttonProperty = "";
 	
-	if (matchup.matchupStatus == matchupStatusOfNewGame ) {
+	if (matchup.matchupStatus === matchupStatusOfNewGame ) {
 		buttonText = "New Game";
 		buttonClass = "newGame";
 		buttonProperty = "onClick=\"createNewGame(" + matchup.matchupId +"," + rivalPlayer.playerId + ")\"";
 	}
-	else if (matchup.matchupStatus == currentPlayerId) {
+	else if (matchup.matchupStatus === currentPlayerId) {
 		buttonText = "Your Turn";
 		buttonClass = "yourTurn";
 		buttonProperty = "onClick=\"playTurn(" + matchup.matchupId + ")\"";
 	}
-	else if (matchup.matchupStatus == rivalPlayer.playerId ) {
+	else if (matchup.matchupStatus === rivalPlayer.playerId ) {
 		buttonText = "Wait";
 		buttonClass = "waitForRival";
 		buttonProperty = "disabled";
@@ -162,15 +142,16 @@ function buildSingleLineOfMatchupsTable(result){
  * @param {type} toInvite
  * @returns {undefined}
  */
-function showFriendsZone() {
+function showFriendsZone(InviteOrNot) {
 
     var htmlCode = "";
     window.location = "#friends";
     document.getElementById("friends_table").innerHTML = "";
-
-	getRegisteredPlayersThatIDidntPlayWith(currentPlayerId, function (playersToPlayWith) {
-		buildFriendsTable(playersToPlayWith);
+    getPlayersToPlayWith(currentPlayerId, function (playersToPlayWith) {
+		buildFriendsTable(playersToPlayWith, false);
 	});
+
+
 }
 
 
@@ -186,8 +167,8 @@ function buildFriendsBar(matchup) {
 
     play_button.appendChild(textInvite);
     invite_button.appendChild(textPlay);
-    play_button.setAttribute("onClick", buildFriendsTable(matchup));
-    invite_button.onClick = buildFriendsTable(matchup);
+    play_button.setAttribute("onClick", buildFriendsTable(matchup, false));
+    invite_button.onClick = buildFriendsTable(matchup, true);
     var row = document.createElement("tr");
     var button_col = document.createElement("td");
     button_col.appendChild(play_button);
@@ -206,7 +187,7 @@ function buildFriendsBar(matchup) {
  * @param {type} toInvite
  * @returns {undefined}
  */
-function buildFriendsTable(playersNotInMatchups) {
+function buildFriendsTable(playersNotInMatchups, toInvite) {
 	
     document.getElementById("friends_bar").style.display = "block";
     document.getElementById("friends_table").innerHTML = "";
@@ -217,9 +198,14 @@ function buildFriendsTable(playersNotInMatchups) {
 
         var text = "";
         var buttonProperty = "";
-		text = "Play";
-		buttonProperty = "onClick=\"startGameWithNewPlayer(" + playersNotInMatchups[index].playerId + ")\"";
-        
+        if (toInvite) {
+            text = "Invite";
+            buttonProperty = "onClick=\"InviteFriend()\"";
+        } else {
+            text = "Play";
+            buttonProperty = "onClick=\"startGameWithNewPlayer(" + playersNotInMatchups[index].playerId + ")\"";
+        }
+
         $("#friends_table").append("<tr align=\"center\">" +
                 "<td><button " + buttonProperty + " >" + text + "</button></td>" +
                 "<td><img src=\"" + getPictureURLFromFacebookId(playersNotInMatchups[index].playerId) + "\" />" +
@@ -249,7 +235,7 @@ function playerTurn() {
 }
 
 /* Converts the image to base 64 and moves to the next step*/
-function handleImageSelected(matchupId, initiatorId, rivalId) {
+function handleImageSelected(matchupId,initiatorId,rivalId) {
 	
     var filesSelected = document.getElementById("inputFileToLoad").files;
     if (filesSelected.length > 0)
@@ -266,138 +252,65 @@ function handleImageSelected(matchupId, initiatorId, rivalId) {
         fileReader.readAsDataURL(fileToLoad);
     }
 }
-
 function moveToStep2(matchupId, initiatorId, rivalId, imageSelectedAsBase64) {
-	var imageSrc = document.getElementById("imageToBlur");
+	var imageSrc=document.getElementById("imageToBlur");
 	imageSrc.setAttribute("src", imageSelectedAsBase64);    
-	var chooseFileElement = document.getElementById("moveToStep3");
-	chooseFileElement.setAttribute("onclick", "moveToStep3(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" + ")");
+	
+	var chooseFileElement=document.getElementById("moveToStep3");
+	chooseFileElement.setAttribute("onclick", "moveToStep3(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'"+imageSelectedAsBase64+"'" + ")");
 	window.location = "#step2";
     document.getElementById("imageToBlur").setAttribute("src", imageSelectedAsBase64);
     $("#slider-fill").val(0).slider('refresh');
 }
 
-function moveToStep3(matchupId, initiatorId, rivalId, imageSelectedAsBase64) {
+function moveToStep3(matchupId,initiatorId,rivalId,imageSelectedAsBase64) {
 	var canvas = document.getElementById("canvasForBlurredImage");
     var imageBlurredAsBase64 = canvas.toDataURL('image/jpeg');
 	
-	var chooseFileElement = document.getElementById("buttonMoveToStep4");
-	chooseFileElement.setAttribute("onclick", "moveToStep4(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" +  "," +  "'" + imageBlurredAsBase64 + "'" + ")");
-		
+	// add all the values of the new game as hidden values in the form
+	document.getElementById("hiddenMatchupId").setAttribute("value", matchupId);
+	document.getElementById("hiddenInitiatorId").setAttribute("value", initiatorId);
+	document.getElementById("hiddenRivalId").setAttribute("value", rivalId);
+	document.getElementById("hiddenImageSelectedAsBase64").setAttribute("value", imageSelectedAsBase64);
+	document.getElementById("hiddenImageBlurredAsBase64").setAttribute("value", imageBlurredAsBase64);
+	
 	window.location = "#step3";	
 }
 
-function moveToStep4(matchupId, initiatorId, rivalId, imageSelectedAsBase64, imageBlurredAsBase64) {
-	var correctAnswer =  $('#options fieldset input#correctAnswer').val()
-	var firstOption =  $('#options fieldset input#firstOption').val()
-	var secondOption =  $('#options fieldset input#secondOption').val()
-	var thirdOption =  $('#options fieldset input#thirdOption').val()
-	
-	var chooseFileElement = document.getElementById("buttonAddPosition");
-	chooseFileElement.setAttribute("onclick", "addLocation(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" +  "," +  "'" + imageBlurredAsBase64 + "'"  + ",'" + correctAnswer + "','" + firstOption + "','" + secondOption + "','" + thirdOption + "')");
-
-	var chooseFileElement = document.getElementById("buttonMoveToStep5");
-	chooseFileElement.setAttribute("onclick", "moveToStep5(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" +  "," +  "'" + imageBlurredAsBase64 + "'"  + ",'" + correctAnswer + "','" + firstOption + "','" + secondOption + "','" + thirdOption + "',-1,-1)");
-	
-	window.location = "#step4";	
-}
-
-
-function moveToStep5(matchupId, challengerId, rivalId, imageSelectedAsBase64, imageBlurredAsBase64, correctAnswer, option1, option2, option3, geoLatitude, geoLongtitude ) {
-	
-	var geoLocation = {
-		"geoLatitude"   : geoLatitude,
-		"geoLongtitude" : geoLongtitude
-	}
-	
-	var newGame = {
-		"matchupId"   		    : matchupId,
-		"challengerId" 		    : challengerId,
-		"rivalId"     	        : rivalId,
-		"imageSelectedAsBase64" : imageSelectedAsBase64,
-		"imageBlurredAsBase64"  : imageBlurredAsBase64,
-		"options"				: [correctAnswer, option1, option2, option3],
-		"correctOptionIndex"	: 0,
-		"geoLocation"			: geoLocation
-	}
-		
+function addGame() {	
+	var newGame=getNewGameData();
 	addGameToDb(newGame);
-	window.location = "#step5";
+	window.location = "#step4";
 }
 
-
-function addLocation(matchupId, initiatorId, rivalId, imageSelectedAsBase64, imageBlurredAsBase64, correctAnswer, firstOption, secondOption, thirdOption) {
-	
-	var geoLocationHolder = document.getElementById("geoLocationHolder");	
-    if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-		function (position) {
-			var latlon = position.coords.latitude+","+position.coords.longitude;
-			var img_url = "http://maps.googleapis.com/maps/api/staticmap?center="
-			+latlon+"&zoom=14&size=400x300&sensor=false";
-			document.getElementById("mapholder").innerHTML = "<img src='"+img_url+"'>";
-			
-			var chooseFileElement = document.getElementById("buttonMoveToStep5");
-			chooseFileElement.setAttribute("onclick", "moveToStep5(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" +  "," +  "'" + imageBlurredAsBase64 + "'"  + ",'" + correctAnswer + "','" + firstOption + "','" + secondOption + "','" + thirdOption + "'," + position.coords.latitude + "," + position.coords.longitude + ")");
-	
-		}
-		, showError);
-    } else {
-        geoLocationHolder.innerHTML = "Geolocation is not supported by this browser.";
-    }
-}
-
-function showPosition(geolatitude, geoLongtitude) {	
-debugger;
-	if (geolatitude == "-1" && geoLongtitude == "-1") {
-		var showHint = document.getElementById("showHint");
-		showHint.innerHTML = "No hint available."; 
-		showHint.setAttribute("onclick", "");
-
-	} else {
-		var latlon = geolatitude + "," + geoLongtitude;
-		var img_url = "http://maps.googleapis.com/maps/api/staticmap?center="
-		+latlon+"&zoom=14&size=400x300&sensor=false";
-		document.getElementById("showHint").innerHTML = "<img height=\"450\" width=\"450\" src='"+img_url+"'>";
+function getNewGameData(){
+	var newGame = {
+		'matchupId': $('#addGame fieldset input#hiddenMatchupId').val(),
+		'challengerId': $('#addGame fieldset input#hiddenInitiatorId').val(),
+		'rivalId': $('#addGame fieldset input#hiddenRivalId').val(),
+		'originalImage': $('#addGame fieldset input#hiddenImageSelectedAsBase64').val(),
+		'blurredImage': $('#addGame fieldset input#hiddenImageBlurredAsBase64').val(),
+        'options': [ $('#addGame fieldset input#nameOfPersonInImage').val(),
+					 $('#addGame fieldset input#firstOption').val(),
+                     $('#addGame fieldset input#secondOption').val(),
+                     $('#addGame fieldset input#thirdOption').val()
+					 ],
+        'correctOptionIndex': 0,
+		'geoLocation' : 'some where in the mediterenian'
 	}
+	return newGame;
 }
-
-
-
-function showError(error) {
-	var geoLocationHolder = document.getElementById("geoLocationHolder");
-    switch(error.code) {
-        case error.PERMISSION_DENIED:
-            geoLocationHolder.innerHTML = "User denied the request for Geolocation."
-            break;
-        case error.POSITION_UNAVAILABLE:
-            geoLocationHolder.innerHTML = "Location information is unavailable."
-            break;
-        case error.TIMEOUT:
-            geoLocationHolder.innerHTML = "The request to get user location timed out."
-            break;
-        case error.UNKNOWN_ERROR:
-            geoLocationHolder.innerHTML = "An unknown error occurred."
-            break;
-    }
-}
-
-
-
 
 
 function playTurn(matchupId) {
 	
 	getGame(matchupId, function(gameData){
-		
-		$("#blurredImage").attr("src",gameData.imageBlurredAsBase64);
+		$("#blurredImage").attr("src",gameData.blurredImage);
 		$("#option1").attr("value", gameData.options[0]);		
 		$("#option2").attr("value", gameData.options[1]);		
 		$("#option3").attr("value", gameData.options[2]);		
 		$("#option4").attr("value", gameData.options[3]);
 		$("#matchupId").attr("value", gameData.matchupId);
-		var showHint = document.getElementById("showHint");
-		showHint.setAttribute("onclick", "showPosition(" + gameData.geoLocation.geoLatitude + "," + gameData.geoLocation.geoLongtitude + ")");
 		window.location = "#yourTurn";
 	});
 }
@@ -405,14 +318,13 @@ function playTurn(matchupId) {
 function checkAnswer(playerAnswer) {
 	matchupId=$("#matchupId").val();
 	$.getJSON( '/games/handlePlayerGuess/' + matchupId + '/' + playerAnswer, function(result) {
-		debugger;
 		if (result.isPlayerAnswerCorrect) {
 			message = "You are Right! The answer was: " + result.correctAnswer + "!";
 		} else {
 			message = "You are Wrong! The answer was: " + result.correctAnswer + "!";
 		}
 		document.getElementById("messageAfterGuess").innerHTML=message;		
-		$("#originalImage").attr("src", result.imageSelectedAsBase64);
+		$("#originalImage").attr("src", result.originalImage);
 		window.location="#EndGame";			
 	});	
 }
@@ -435,22 +347,12 @@ function myBlur() {
 
 }
 
-function createNewGame(matchupId, rivalId) {
-	var initiatorId = currentPlayerId;
-	var chooseFileElement = document.getElementById("inputFileToLoad");
-	chooseFileElement.setAttribute("onchange", "handleImageSelected(" + matchupId + "," + initiatorId + "," + rivalId + ")");
+function createNewGame(matchupId,rivalId) {
+	var initiatorId=currentPlayerId;
+	var chooseFileElement=document.getElementById("inputFileToLoad");
+	chooseFileElement.setAttribute("onchange", "handleImageSelected("+matchupId+","+initiatorId+","+rivalId+")");
     window.location = "#step1";
 }
-
-
-
-
-
-
-
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -514,76 +416,9 @@ function createNewMatchup(currentPlayerId, rivalId, callback){
 	});	
 }
 
-function getRegisteredPlayersThatIDidntPlayWith(currentPlayerId, callback) {
-	$.getJSON( '/playersRegisteredThatIDidntPlayWith/' + currentPlayerId, function( playersToPlayWith ) {
+function getPlayersToPlayWith(currentPlayerId, callback) {
+	$.getJSON( '/playersToPlayWith/' + currentPlayerId, function( playersToPlayWith ) {
 		callback(playersToPlayWith);
 	});		
-}
 
-function getLoginStatus() {
-if (!test) {
-    console.log("Attempting to connect via facebook login");
-    try {
-        FB.getLoginStatus(function(response) {
-            if (response.status == 'connected') {		
-				fbId = response.authResponse.userID;
-				login(fbId);
- 
-            } else {
-				signIn();
-            }
-        }
-        , {scope: 'email, public_profile, user_about_me, user_birthday, user_friends'}
-        );
-    }
-    catch (err) {
-        console.trace("Couldn't use facebook login, calling loginFromWeb and loading hardcoded value");
-    }
-} else {
-				login(testid);
-}
-}
-
-function login(fbId) {
-	currentPlayerId = fbId;
-	showMatchups();
-}
-
-function signIn() {
-    try {
-        FB.login(
-                function(response) {
-                    if (response.authResponse) {
-						FB.api('/me', function(response) {
-							signUp(response.first_name, response.last_name, response.id);
-						});
-                    } else {
-                        //alert('not logged in');
-                    }
-                },
-				{scope: 'email, public_profile, user_about_me, user_birthday, user_friends'}
-        );
-    }
-    catch (e) {
-        // TODO: log error
-    }
-}
-
-function signUp(first_name, last_name, fbID) {
-	 var newPlayer = {
-		"playerId" : fbID,
-		"name" : first_name,
-		"lastName" : last_name
-	 };
-	 
-	 $.ajax({
-            type: 'POST',
-            data: newPlayer,
-            url: '/players',
-            dataType: 'JSON'
-        }).done(function( response ) {
-			console.log(response.msg);
-        });
-		
-	login(fbID);
 }

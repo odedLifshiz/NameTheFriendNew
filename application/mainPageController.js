@@ -46,12 +46,24 @@ mainPageController.prototype.findAllPlayerMatchups = function(req, res){
 	});	
 };
 
+
+mainPageController.prototype.addNewPlayer = function(req, res){
+	var player = req.body;
+	player.playerId = parseInt(player.playerId);
+	this.businessLayer.addNewPlayer(player, function(err, result) {
+		if (err) {
+			res.send(500, err);
+		}
+	});	
+};
+
+
 mainPageController.prototype.addNewGame = function(req, res){
 	var game = req.body;
 	// set the new game parameters as integers (instead of strings)
-	game.matchupId=parseInt(game.matchupId);
-	game.challengerId=parseInt(game.challengerId);
-	game.rivalId=parseInt(game.rivalId);
+	game.matchupId = parseInt(game.matchupId);
+	game.challengerId = parseInt(game.challengerId);
+	game.rivalId = parseInt(game.rivalId);
 	
 	this.businessLayer.addNewGame(game, function(err, result) {
 		if (err) {
@@ -160,6 +172,24 @@ mainPageController.prototype.findMatchupData = function(req, res){
 };
 
 
+mainPageController.prototype.findPlayersRegisteredThatIDidntPlayWith = function(req, res){
+	var playerId = parseInt(req.param("playerId"));
+	console.log("hello");
+	console.log(playerId);
+	this.businessLayer.findPlayersRegisteredThatIDidntPlayWith(playerId, function(err, result) {
+		if (err) {
+			res.send(500, err);
+		} else {
+			res.json(result);
+		}
+	});	
+};
+
+
+mainPageController.prototype.playersNotRegistered = function(req, res){
+	var playerIDs  = req.body;
+	console.log(playerIDs);
+};
 
 
 module.exports = mainPageController;

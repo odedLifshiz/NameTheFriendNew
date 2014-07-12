@@ -25,6 +25,12 @@ databaseObjectMongo.prototype.findAllPlayerMatchups = function(playerId, callbac
     this.connection.collection('matchups').find({$or: [ {"player1Id":playerId},{"player2Id":playerId}]}).toArray(callback);
 };
 
+
+databaseObjectMongo.prototype.addNewPlayer = function(player, callback){
+	this.connection.collection('players').insert(player, callback);
+};
+
+
 databaseObjectMongo.prototype.addNewGame = function(game, callback){
 	this.connection.collection('games').insert(game, callback);
 };
