@@ -1,4 +1,29 @@
+#footer {
+   position:absolute;
+   bottom:0;
+   width:100%;
+   height:60px;   /* Height of the footer */
+   background:#6cf;
+}
 
+
+.fr {
+    float: right!important;
+    margin-right: 0%;
+    display:inline-block
+}
+
+#header-top {
+    display:block;
+    z-index: 2;
+    text-align: center;
+}
+
+#header-top .header-right {
+    display:inline-block;
+    z-index: 2;
+    margin-top: -1em;
+}
 
 .video_container {
     border: 1px solid silver;

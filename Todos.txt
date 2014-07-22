@@ -3,11 +3,11 @@ TODO'S
  After choosing to add geolocation remove the add geolocation button
  Handle errors in selecting geolocation
  Separate entering correct option and other option 
- Check mobile display
+ Check mobile display - Done. 
  Hall of fame display Player/Score correctly.
  Session management.
  Deployment.
  Consider - Moving photo storage to cloudFront.
  Back button
  Handle create new game update as soon as created.
- Logout button - logout from facebook
+ Logout button - logout from facebook - Done. need to check on oded compuer. 
