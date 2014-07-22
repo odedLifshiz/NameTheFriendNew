@@ -78,7 +78,7 @@
           <h1>Name The Friend</h1>
         </header>
         <div id="step1">
-          <h1> Step 1</h1>
+          <h1> Step 1: Choose a picture to blur</h1>
         </div>
         <div id="imgTest">
           <input id="inputFileToLoad" type="file">
@@ -101,13 +101,13 @@
           <h1>Name The Friend</h1>
         </header>
         <div id="step2">
-          <h1> Step 2</h1>
+          <h1> Step 2: </h1>
         </div>
         <div id="instructions">
-          <h1>Please Blur the image</h1>
+          <h1>Blur the picture</h1>
         </div>
-        <center><img id="imageToBlur" src="">
-          <canvas id="canvasForBlurredImage" width="300" height="300"></canvas><br>
+        <center><img id="imageToBlur" src="" width="400" height="400" style="border:1px solid">
+          <canvas id="canvasForBlurredImage" width="1500" height="1500" style="border:1px solid"></canvas><br>
           <div id="div-slider">
             <input id="slider-fill" type="range" name="slider-fill" onchange="myBlur()" value="0" min="0" max="100" data-highlight="true">
           </div>
@@ -167,7 +167,7 @@
         </header>
         <div id="step4"></div>
         <div id="addgeoLocation">
-          <h1>Add Geo-location as a hint</h1>
+          <h1>Optional: Add Your position as a hint</h1>
 			<p id="geoLocationHolder">Click to get your position:</p>
 			<div id="mapholder"></div>			
 		  <a data-role="button" id="buttonAddPosition">Add Position</a>

@@ -1,30 +1,3 @@
-$(document).ready(function(){
-    var animating = false;
-    $("#go").click(function(){
-        if (!animating) {
-            animating = true;
-            var speed = 1250;
-            var blur = 10;
-        //    var interval = speed/blur;
-            
-                            stackBlurImage("kitten", "canvas", blur);
-
-//            var anim = setInterval(function(){
-//                blur--;
-//                if (!blur) {
-//                    clearInterval(anim);
-//                    animating = false;
-//                    console.log("Done!");
-//                }
-//                stackBlurImage("kitten", "canvas", blur);
-//            }, interval);
-
-        } else {
-            console.log("Animation in progress!");   
-        }
-    });
-});
-
 /*
 
 StackBlur - a fast almost Gaussian Blur For Canvas

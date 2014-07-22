@@ -1,9 +1,9 @@
 
 var test = true;
 var currentPlayerId = 0;	
-//var testid=10204510892599438; // oded
-var testid =10204520458916340; // stav
-var matchupStatusOfNewGame=0;
+var testid = 10204510892599438; // oded
+//var testid = 10204520458916340; // stav
+var matchupStatusOfNewGame = 0;
 
 
 $(document).ready(function() {
@@ -274,7 +274,8 @@ function moveToStep2(matchupId, initiatorId, rivalId, imageSelectedAsBase64) {
 	chooseFileElement.setAttribute("onclick", "moveToStep3(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" + ")");
 	window.location = "#step2";
     document.getElementById("imageToBlur").setAttribute("src", imageSelectedAsBase64);
-    $("#slider-fill").val(0).slider('refresh');
+	debugger;
+	myBlur();
 }
 
 function moveToStep3(matchupId, initiatorId, rivalId, imageSelectedAsBase64) {
@@ -327,6 +328,12 @@ function moveToStep5(matchupId, challengerId, rivalId, imageSelectedAsBase64, im
 
 
 function addLocation(matchupId, initiatorId, rivalId, imageSelectedAsBase64, imageBlurredAsBase64, correctAnswer, firstOption, secondOption, thirdOption) {
+	
+	// remove the add location button since it was already clicked
+	document.getElementById('buttonAddPosition').setAttribute("style","visibility:hidden");
+	
+	// change the titel
+	document.getElementById("geoLocationHolder").innerHTML = "The following position will be added as hint:";
 	
 	var geoLocationHolder = document.getElementById("geoLocationHolder");	
     if (navigator.geolocation) {

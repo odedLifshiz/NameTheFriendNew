@@ -1,7 +1,5 @@
 TODO'S
 ------
- After choosing to add geolocation remove the add geolocation button
- Handle errors in selecting geolocation
  Separate entering correct option and other option 
  Check mobile display
  Hall of fame display Player/Score correctly.
