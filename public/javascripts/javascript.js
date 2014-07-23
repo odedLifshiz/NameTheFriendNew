@@ -3,8 +3,11 @@ var test = true;
 var currentPlayerId = 0;
 //var testid=10204510892599438; // oded
 var testid = 10204520458916340; // stav
+//var testid = 0;
 var matchupStatusOfNewGame = 0;
-
+var savePlayerLocation;
+var deletePlayerById;
+var selectLastUserLocationById;
 
 $(document).ready(function() {
     window.fbAsyncInit = function() {
@@ -24,7 +27,67 @@ $(document).ready(function() {
         js.src = "//connect.facebook.net/en_US/sdk.js";
         fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));
+
+    var shortName = 'db';
+    var version = '1.0';
+    var displayName = 'NameTheFriendDB';
+    var maxSize = 65536;
+    var database = openDatabase(shortName, version, displayName, maxSize);
+    database.transaction(
+            function(transaction) {
+                transaction.executeSql("CREATE TABLE playerLocations (" +
+                        "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                        "fbid INTEGER NOT NULL, name TEXT NOT NULL, geoLatitude INTEGER ,geoLongtitude INTEGER);");
+                console.log("db created");
+            }, nullDataHandler, showError);
+
+    savePlayerLocation = function(fbid, name, geoLatitude, mgeoLongtitude, callback) {
+        database.transaction(
+                function(transaction) {
+                    transaction.executeSql(("INSERT INTO playerLocations (fbid,name,geoLatitude,geoLongtitude) VALUES ( ?,?,?,?);"),
+                            [fbid, name, geoLatitude, geoLongtitude],
+                            function(transaction, results) {
+                                callback(results.insertId);
+                            }
+                    );
+                    console.log("db insert success: " + fbid + " " + name);
+                }
+        , nullDataHandler, showError);
+    };
+
+    deletePlayerById = function(fbid) {
+        database.transaction(
+                function(transaction) {
+                    transaction.executeSql(("DELETE FROM playerLocations WHERE fbid = ?"),
+                            [fbid],
+                            function() {
+                                console.log("db deleted user " + fbid);
+                            }
+                    );
+                }
+        );
+    };
+
+    selectLastUserLocationById = function(fbid, callback) {
+        database.transaction(
+                function(transaction) {
+                    transaction.executeSql(("SELECT geoLatitude,geoLongtitude FROM playerLocations WHERE fbid = ? ORDER BY created DESC LIMIT 1"),
+                            [
+                                Number(fbid)
+                            ],
+                            function(transaction, result) {
+                                console.log('SQLite: SELECT last UserLocation by id is done.');
+                                dataset = result.rows;
+                                Sql.log(dataset);
+                                callback(result.rows);
+                            }
+                    );
+                }
+        );
+    };
 });
+
+
 
 /**
  * Moves the user to the Matchups zone.
@@ -149,8 +212,6 @@ function buildSingleLineOfMatchupsTable(result) {
             "<br />" + rivalPlayer.name + "</td></tr>");
 
 }
-
-
 
 
 
@@ -335,6 +396,9 @@ function addLocation(matchupId, initiatorId, rivalId, imageSelectedAsBase64, ima
                             + latlon + "&zoom=14&size=400x300&sensor=false";
                     document.getElementById("mapholder").innerHTML = "<img src='" + img_url + "'>";
                     document.getElementById("buttonAddPosition").style.display = "none";
+
+                    savePlayerLocation(currentPlayerId, "", position.coords.latitude, position.coords.longitude);
+
                     var chooseFileElement = document.getElementById("buttonMoveToStep5");
                     chooseFileElement.setAttribute("onclick", "moveToStep5(" + matchupId + "," + initiatorId + "," + rivalId + "," + "'" + imageSelectedAsBase64 + "'" + "," + "'" + imageBlurredAsBase64 + "'" + ",'" + correctAnswer + "','" + firstOption + "','" + secondOption + "','" + thirdOption + "'," + position.coords.latitude + "," + position.coords.longitude + ")");
 
@@ -343,6 +407,8 @@ function addLocation(matchupId, initiatorId, rivalId, imageSelectedAsBase64, ima
     } else {
         geoLocationHolder.innerHTML = "Geolocation is not supported by this browser.";
     }
+    document.getElementById("buttonAddPosition").style.display = "none";
+
 }
 
 function showPosition(geolatitude, geoLongtitude) {
@@ -524,7 +590,9 @@ function getLoginStatus() {
             FB.getLoginStatus(function(response) {
                 if (response.status == 'connected') {
                     fbId = response.authResponse.userID;
-                    login(fbId);
+                    FB.api('/me', function(response) {
+                        login(response.id, response.first_name);
+                    });
 
                 } else {
                     signIn();
@@ -537,12 +605,13 @@ function getLoginStatus() {
             console.trace("Couldn't use facebook login, calling loginFromWeb and loading hardcoded value");
         }
     } else {
-        login(testid);
+        login(testid, "stav");
     }
 }
 
-function login(fbId) {
+function login(fbId, name) {
     currentPlayerId = fbId;
+    //saveNewPlayer(fbId, name);
     showMatchups();
 }
 
@@ -582,13 +651,13 @@ function signUp(first_name, last_name, fbID) {
         console.log(response.msg);
     });
 
-    login(fbID);
+    login(fbID, first_name);
 }
 
 function logout() {
-    debugger;
     FB.logout(function(response) {
         alert("before " + currentPlayerId);
+        // deletePlayerById(currentPlayerId);
         currentPlayerId = 0;
         window.location = "#main";
         alert("after " + currentPlayerId);
@@ -596,8 +665,110 @@ function logout() {
 }
 
 
-function checkUserRegister() {
-    if (window.location.toString().match("\#matchups$") && currentPlayerId == 0) {
+$(document).on("pagebeforeshow", "#matchups", function() {
+    if (currentPlayerId == 0) {
         window.location = "#main";
     }
+});
+
+
+$(document).on("pagebeforeshow", "#step1", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+$(document).on("pagebeforeshow", "#step2", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+$(document).on("pagebeforeshow", "#step3", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+$(document).on("pagebeforeshow", "#step4", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+
+$(document).on("pagebeforeshow", "#friends", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+$(document).on("pagebeforeshow", "#step5", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+$(document).on("pagebeforeshow", "#yourTurn", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+$(document).on("pagebeforeshow", "#EndGame", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+
+$(document).on("pagebeforeshow", "#hallOfFame", function() {
+    if (currentPlayerId == 0) {
+        window.location = "#main";
+    }
+});
+
+
+function createPlayersTable() {
+
+}
+
+
+function saveNewPlayer(fbid, name) {
+    savePlayer(
+            fbid, name,
+            function() {
+                alert("name: " + name);
+            }
+    );
+}
+
+
+function showError(transaction, error)
+{
+    console.log("error occured: this=" + this);//error.message+" error.code:"+error.code);
+    return true;
+}
+
+function nullDataHandler(transaction, results)
+{
+    console.log("nullDataHandler=" + this);
+}
+
+
+function buildListOfPossitions() {
+     
+     selectLastUserLocationById(currentPlayerId, function(data) {
+        }
+     });
+    
+}
+
+
+function getPossitionAdress(lat, lan) {
+    var latlng = lat + "," + lan;
+    var url = "http://maps.googleapis.com/maps/api/geocode/json?latlng=" + latlng + "&sensor=false";
+    $.getJSON(url, function(data) {
+        return data.results[0].formatted_address;
+    });
 }

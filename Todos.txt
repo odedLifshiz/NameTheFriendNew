@@ -1,6 +1,6 @@
 TODO'S
 ------
- After choosing to add geolocation remove the add geolocation button
+ After choosing to add geolocation remove the add geolocation button - done
  Handle errors in selecting geolocation
  Separate entering correct option and other option 
  Check mobile display - Done. 
@@ -8,6 +8,6 @@ TODO'S
  Session management.
  Deployment.
  Consider - Moving photo storage to cloudFront.
- Back button
+ Back button - done
  Handle create new game update as soon as created.
  Logout button - logout from facebook - Done. need to check on oded compuer. 

@@ -19,6 +19,7 @@
                     <div id="login_pagecontent" data-role="content"><br><br><br><br><br><a id="login" data-role="button" onclick="getLoginStatus();" data-theme="b">Log in</a>
                         <footer data-role="footer" data-position="fixed">
                             <h3> Please Log in</h3>
+                            <a onclick="getPossitionAdress()"> layout </a>
                         </footer>
                 </center>
             </div>
@@ -89,10 +90,13 @@
             <!--Game Page -->
             <div id="step1" data-role="page">
                 <header data-role="header">
-                    <h1>Name The Friend</h1>
-                    <div class="fl header-left" style="display:inline-block;float: left;">
-                        <a href="#main" class="ui-btn-left"><img src='images/Back.png' style="height: 2.5em; border: none;"></a>
-                    </div>
+                    <div id="header-top">
+
+                        <h1>Name The Friend</h1>
+                        <div class="fl header-left" style="display:inline-block;float: left;">
+                            <a href="#main" class="ui-btn-left"><img src='images/Back.png' style="height: 2.5em; border: none;"></a>
+                        </div>
+
                 </header>
                 <div id="step1">
                     <h1> Step 1</h1>
@@ -187,7 +191,14 @@
                     <h1>Add Geo-location as a hint</h1>
                     <p id="geoLocationHolder">Click to get your position:</p>
                     <div id="mapholder"></div>			
-                    <a data-role="button" id="buttonAddPosition">Add Position</a>
+                    <a data-role="button" id="buttonAddPosition">Add Current Position</a>                    
+                    <a data-role="button" id="buttonAddPosition" onClick="showPostion">Choose from existing Positions</a>
+                    <ul data-role="listview">
+                        <li><a onClick=> Acura</a></li>
+                        <li><a href="audi.html">Audi</a></li>
+                        <li><a href="bmw.html">BMW</a></li>
+                    </ul>
+
                     <a data-role="button" id="buttonMoveToStep5">Next</a>
                 </div>
                 <footer data-role="footer" data-position="fixed">
