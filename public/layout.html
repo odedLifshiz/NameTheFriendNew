@@ -1,14 +1,302 @@
-<!DOCTYPE html>
 <html>
-  <head>
-    <title></title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
-  </head>
-  <body>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
-    <script src="/javascripts/javascript.js"></script>
-    <script src="/javascripts/blur.js"></script>
-  </body>
+    <head>
+        <title>Safari SQLite Hello World Example</title>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+        <script type="text/javascript">
+
+
+$(document).ready(function() {
+    window.fbAsyncInit = function() {
+        FB.init({
+            appId: '434847823321597',
+            xfbml: true,
+            version: 'v2.0'
+        });
+    };
+    (function(d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {
+            return;
+        }
+        js = d.createElement(s);
+        js.id = id;
+        js.src = "//connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+});
+
+            try {
+                if (!window.openDatabase) {
+                    alert('not supported');
+                }
+                else {
+                    // setting for our database
+                    var shortName = 'mydb';
+                    var version = '1.0';
+                    var displayName = 'simple db';
+                    var maxSize = 65536; // in bytes
+                    var database = openDatabase(shortName, version, displayName, maxSize);
+
+                    // You should have a database instance in db.
+                }
+            } catch (e) {
+                // Error handling code goes here.
+                if (e == 2) {
+                    // Version number mismatch.
+                    alert("Invalid database version.");
+                } else {
+                    alert("Unknown error " + e + ".");
+                }
+                return;
+            }
+
+
+            function showError(transaction, error)
+            {
+                console.log("error occured: this=" + this);//error.message+" error.code:"+error.code);
+                return true;
+            }
+
+            function nullDataHandler(transaction, results)
+            {
+                console.log("nullDataHandler=" + this);
+            }
+
+            // Create table
+            database.transaction(
+                    function(transaction) {
+                        // Create our students table if it doesn't exist. IF NOT EXISTS
+                        //transaction.executeSql("drop table students");
+                        transaction.executeSql("CREATE TABLE students (" +
+                                "id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT," +
+                                "name TEXT NOT NULL, email TEXT NOT NULL);");
+                        console.log("db created");
+
+                    }, nullDataHandler, showError);
+
+            //  save a student.
+            var saveStudent = function(name, email, callback) {
+                // Insert a new student.
+                database.transaction(
+                        function(transaction) {
+                            //transaction.executeSql('insert into students (name, email) VALUES ("Joe", "joe@com");', [], nullDataHandler, showError);
+                            // Insert a new student with the given values.
+                            transaction.executeSql(("INSERT INTO students (name,email) VALUES ( ?,?);"),
+                                    [name, email],
+                                    function(transaction, results) {
+                                        // Execute the success callback,
+                                        // passing back the newly created ID.
+                                        callback(results.insertId);
+                                    }
+                            );
+                            console.log("db insert success");
+
+                        }
+                , nullDataHandler, showError);
+            };
+
+
+            // I get all the students.
+            var getstudents = function(callback) {
+                // Get all the students.
+                database.transaction(
+                        function(transaction) {
+
+                            // Get all the students in the table.
+                            transaction.executeSql(
+                                    (
+                                            "SELECT " +
+                                            "* " +
+                                            "FROM " +
+                                            "students " +
+                                            "ORDER BY " +
+                                            "name ASC"
+                                            ),
+                                    [],
+                                    function(transaction, results) {
+                                        // Return the students results set.
+                                        callback(results);
+                                    }
+                            );
+                            console.log("db select");
+
+                        }
+                );
+            };
+
+
+            // I delete all the students.
+            var deletestudents = function(callback) {
+                // Get all the students.
+                database.transaction(
+                        function(transaction) {
+
+                            // Delete all the students.
+                            transaction.executeSql(
+                                    ("DELETE FROM students "),
+                                    [],
+                                    function() {
+                                        callback();
+                                    }
+                            );
+                            console.log("db delete list");
+                        }
+                );
+            };
+
+            var searchData = function(name, callback)
+            {
+                database.transaction(
+                        function(transaction) {
+                            transaction.executeSql("SELECT * from students where name=?;",
+                                    [name], function(transaction, results) {
+                                // Return the students results set.
+                                callback(results);
+                            }); // array of values for the ? placeholders
+                        }
+                );
+            }
+            // -------------------------------------------------- //
+            // -------------------------------------------------- //
+
+
+            // When the DOM is ready, init the scripts.
+            $(function() {
+                // Get the form.
+                var form = $("form#add");
+
+                // Get the student list.
+                var list = $("#students");
+
+                // Get the Clear students link.
+                var clearstudents = $("#clearstudents");
+
+
+                // I refresh the students list.
+                var refreshstudents = function(results) {
+                    // Clear out the list of students.
+                    list.empty();
+
+                    // Check to see if we have any results.
+                    if (!results) {
+                        return;
+                    }
+
+                    // Loop over the current list of students and add them
+                    // to the visual list.
+                    $.each(
+                            results.rows,
+                            function(rowIndex) {
+                                var row = results.rows.item(rowIndex);
+
+                                // Append the list item.
+                                list.append("<li>" + row.id + "," + row.name + "," + row.email + "</li>");
+                            }
+                    );
+                };
+
+
+
+                // Bind the form to save the student.
+                form.submit(
+                        function(event) {
+                            // Prevent the default submit.
+                            event.preventDefault();
+
+                            // Save the student.
+                            saveStudent(
+                                    form.find("input.name").val(), form.find("input.email").val(),
+                                    function() {
+                                        // Reset the form and focus the input.
+                                        form.find("input.name")
+                                                .val("")
+                                        form.find("input.email").val("")
+                                                .focus()
+                                                ;
+
+                                        // Refresh the student list.
+                                        getstudents(refreshstudents);
+                                    }
+                            );
+                        }
+                );
+
+
+                // Bind to the clear students link.
+                clearstudents.click(
+                        function(event) {
+                            // Prevent default click.
+                            event.preventDefault();
+
+                            // Clear the students
+                            deletestudents(refreshstudents);
+                        }
+                );
+
+
+                // Refresh the students list - this will pull the persisted
+                // student data out of the SQLite database and put it into
+                // the UL element.
+                getstudents(refreshstudents);
+
+                //---------------------
+                var formSearch = $("form#search");
+                var emailData = $('div#email');
+                var showEmail = function(results) {
+                    console.log("showEmail");
+                    $.each(
+                            results.rows,
+                            function(rowIndex) {
+                                var row = results.rows.item(rowIndex);
+
+                                // Append the list item.
+                                emailData.append("<p>" + row.id + "," + row.name + "," + row.email + "</p>");
+                            }
+                    );
+
+                };
+                formSearch.submit(
+                        function(event) {
+                            console.log("formSearc-submit");
+                            // Prevent the default submit.
+                            event.preventDefault();
+
+                            // update the email of a student.
+                            searchData(formSearch.find("input.search").val(), showEmail);
+                        });
+
+
+
+            });
+
+        </script>
+    </head>
+    <body>
+
+        <h1>
+            SQLlite example
+        </h1>
+
+        <form id="add">
+            Name:
+            <input type="text" name="name" class="name" /><br/>
+            Email:
+            <input type="email" name="email" class="email" />
+            <input type="submit" value="Add Student" />
+        </form>
+        <form id="search">
+            Search for email:
+            <input type="search" name="search" class="search"/>
+            <input type="submit"  value="search"/>
+        </form>
+        <div id='email'></div>
+        <h2>students</h2>
+
+        <ul id="students">	</ul>
+
+        <p>
+            <a id="clearstudents" href="#">Clear students</a>!
+        </p>
+
+    </body>
 </html>

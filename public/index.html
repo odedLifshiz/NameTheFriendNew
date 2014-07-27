@@ -1,285 +1,304 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title></title>
-    <link rel="stylesheet" href="/stylesheets/style.css">
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
-  </head>
-  <body>
-    <div id="fb-root">
-	
-      <!--Main Page 
-      -->
-      <div id="main" data-role="page">
-        <center>
-          <header data-role="header">
-            <h1>Name The Friend</h1>
-          </header>
-			<div id="login_pagecontent" data-role="content"><br><br><br><br><br><a id="login" data-role="button" onclick="getLoginStatus();" data-theme="b">Log in</a>
-          <footer data-role="footer" data-position="fixed">
-              <h3> Please Log in</h3>
-          </footer>
-      </center>
-   </div>
-      <!--Main Page 
-      -->
-      <div id="matchups" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-          <input type="button" value="Logout" onclick="logout();" data-theme="b" class="ui-btn-right">
-        </header>
-        <div id="matchups_pagecontent" data-role="content">
-          <div id="playerBar" dir="rtl"></div><br><br>
-          <div id="matchups_table_content" dir="rtl" align="center">
-            <table id="matchups_tableNew" width="80%"></table><br><br>
-          </div><br><br>
-        </div><br><br>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-      <!--friends Page 
-      -->
-      <div id="friends" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1><a href="#settings" data-icon="gear" data-role="button" data-theme="b" class="ui-btn-right">Settings</a>
-        </header>
-        <div id="playerBar" dir="rtl"></div>
-        <div id="friends_zone" data-role="content">
-          <div id="friends_zone_content" dir="rtl" align="center">
-            <table id="friends_bar" width="80%">
-            </table><br><br>
-            <table id="friends_table" width="80%"></table>
-          </div><br><br>
-        </div>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-      <!--Game Page 
-      -->
-	  
-	  
-	  
-      <div id="step1" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="step1">
-          <h1> Step 1: Choose a picture to blur</h1>
-        </div>
-        <div id="imgTest">
-          <input id="inputFileToLoad" type="file">
-        </div>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-	  
-	  
-	  
-      <div id="step2" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="step2">
-          <h1> Step 2: </h1>
-        </div>
-        <div id="instructions">
-          <h1>Blur the picture</h1>
-        </div>
-        <center><img id="imageToBlur" src="" width="400" height="400" style="border:1px solid">
-          <canvas id="canvasForBlurredImage" width="1500" height="1500" style="border:1px solid"></canvas><br>
-          <div id="div-slider">
-            <input id="slider-fill" type="range" name="slider-fill" onchange="myBlur()" value="0" min="0" max="100" data-highlight="true">
-          </div>
-          <ul><a id="moveToStep3" data-role="button"><font size="4">Next</font></a>
-		      <a data-role="button" data-rel="back">Back</a></ul>
-          <center>
-            <footer data-role="footer">
-              <div data-role="navbar">
-                <ul>
-                  <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-                  <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-                  <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-                </ul>
-              </div>
-            </footer>
-          </center>
-        </center>
-      </div>
-	  
-	  
-	  
-      <div id="step3" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="step">
-          <h1>Step 3</h1>
-        </div>
-        <div id="instructions">
-          <h2>Please enter the correct answer<br>and 3 other options</h2>
-          <div id="options">
-            <fieldset>
-              <input id="correctAnswer" type="text" placeholder="Correct answer">
-              <input id="firstOption" type="text" placeholder="First option">
-              <input id="secondOption" type="text" placeholder="Second option">
-              <input id="thirdOption" type="text" placeholder="Third option">
-			   <a data-role="button" id="buttonMoveToStep4">Next</a>
-            </fieldset>
-          </div><a data-role="button" data-rel="back">Back</a>
-        </div>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-	  
-	  
-	  
-      <div id="step4" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="step4"></div>
-        <div id="addgeoLocation">
-          <h1>Optional: Add Your position as a hint</h1>
-			<p id="geoLocationHolder">Click to get your position:</p>
-			<div id="mapholder"></div>			
-		  <a data-role="button" id="buttonAddPosition">Add Position</a>
-		  <a data-role="button" id="buttonMoveToStep5">Next</a>
-        </div>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
+    <head>
+        <title></title>
+        <link rel="stylesheet" href="stylesheets/style.css">
+        <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.css">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+    </head>
+    <body>
+        <div id="fb-root">
 
- 	  
-      <div id="step5" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="step5"></div>
-        <div id="instructions">
-          <h1>The game was sent successfully</h1>
-        </div>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
+            <!--Main Page 
+            -->
+            <div id="main" data-role="page">
+                <center>
+                    <header data-role="header">
+                        <h1>Name The Friend</h1>
+                    </header>
+                    <div id="login_pagecontent" data-role="content"><br><br><br><br><br><a id="login" data-role="button" onclick="getLoginStatus();" data-theme="b">Log in</a>
+                      <div id="login_pagecontent" data-role="content"><br><br><a id="buttonRunTest" data-role="button" onclick="setupTest();" data-theme="b">Run test without facebook login</a>	
+					  <div id="login_pagecontent" data-role="content"><br><br><a id="buttonRunTest" data-role="button" onclick="teardownTest();" data-theme="b">Cancel test without facebook login</a>	
+					  <div id="login_pagecontent" data-role="content"><br><br><a id="buttonRunTest" data-role="button" onclick="switchPlayer();" data-theme="b">Switch player</a>	                            
+						<footer data-role="footer" data-position="fixed">
+							<h3> Please Log in</h3>						
+                        </footer>
+                </center>
+            </div>
+            <!--Matchups Page 
+            -->
+            <div id="matchups" data-role="page">
+                <header data-role="header">
+                    <div id="header-top">
+                        <div class="fr header-right">
+                            <input type="button" value="Logout" onclick="logout();" data-theme="b" class="ui-btn-right">
+                        </div>
+                        <div class="header-center" style=" margin-left: 4em;">
+                            <h1>Name The Friend</h1> 
+                        </div>
+                        <div class="fl header-left" style="display:inline-block;float: left;">
+                            <a href="#main" class="ui-btn-left"><img src='images/Back.png' style="height: 2.5em; border: none;"></a>
+                        </div>
+                    </div>
+                </header>
+                <div id="matchups_pagecontent" data-role="content">
+                    <div id="playerBar" dir="rtl"></div><br><br>
+                    <div id="matchups_table_content" dir="rtl" align="center">
+                        <table id="matchups_tableNew" width="80%"></table><br><br>
+                    </div><br><br>
+                </div><br><br>
+                <div class="MainFooter">
+                    <footer data-role="footer" data-position="fixed">
+                        <div data-role="navbar">
+                            <ul>
+                                <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                                <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                                <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                            </ul>
+                        </div>
+                    </footer>
+                </div>
+            </div>
+            <!--friends Page 
+            -->
+            <div id="friends" data-role="page">
+                <header data-role="header">
+                    <h1>Name The Friend</h1><a href="#settings" data-icon="gear" data-role="button" data-theme="b" class="ui-btn-right">Settings</a>
+                    <div class="fl header-left" style="display:inline-block;float: left;">
+                        <a href="#matchups" class="ui-btn-left"><img src='images/Back.png' style="height: 2.5em; border: none;"></a>
+                    </div>
+                </header>
+                <div id="playerBar" dir="rtl"></div>
+                <div id="friends_zone" data-role="content">
+                    <div id="friends_zone_content" dir="rtl" align="center">
+                        <table id="friends_bar" width="80%">
+                        </table><br><br>
+                        <table id="friends_table" width="80%"></table>
+                    </div><br><br>
+                </div>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
 
-	  
-      <div id="yourTurn" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="guessPersonInPicture">
-          <h1>Guess the Person in the picture</h1>
+
+            <!--Game Page -->
+            <div id="step1" data-role="page">
+                <header data-role="header">
+                    <div id="header-top">
+
+                        <h1>Name The Friend</h1>
+                        <div class="fl header-left" style="display:inline-block;float: left;">
+                            <a href="#main" class="ui-btn-left"><img src='images/Back.png' style="height: 2.5em; border: none;"></a>
+                        </div>
+
+                </header>
+                <div id="step1">
+                    <h1> Step 1: Choose a picture to blur</h1>
+                </div>
+                <div id="imgTest">
+                    <input id="inputFileToLoad"  onchange="handleImageSelected()" type="file">
+                </div>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
+
+            <div id="step2" data-role="page">
+                <header data-role="header">
+                    <h1>Name The Friend</h1>
+                </header>
+                <div id="step2">
+                    <h1> Step 2: Please Blur the picture</h1>
+                </div>
+                <center>
+					<img id="imageToBlur" src="">
+                    <canvas id="canvasForBlurredImage" width="300" height="300"></canvas><br>
+                    <div id="div-slider">
+                        <input id="slider-fill" type="range" name="slider-fill" onchange="myBlur()" value="0" min="0" max="100" data-highlight="true">
+                    </div>
+                    <ul><a id="moveToStep3" data-role="button" onclick="moveToStep3()"><font size="4">Next</font></a>
+                        <a data-role="button" data-rel="back">Back</a></ul>
+                    <center>
+                        <footer data-role="footer" data-position="fixed">
+                            <div data-role="navbar">
+                                <ul>
+                                    <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                                    <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                                    <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                                </ul>
+                            </div>
+                        </footer>
+                    </center>
+                </center>
+            </div>
+
+
+
+            <div id="step3" data-role="page">
+                <header data-role="header">
+                    <h1>Name The Friend</h1>
+                </header>
+                <div id="step">
+                    <h1>Step 3</h1>
+                </div>
+                <div id="instructions">
+                    <h2>Please enter the correct answer<br>and 3 other options</h2>
+                    <div id="options">
+                        <fieldset>
+                            <input id="correctAnswer" type="text" placeholder="Correct answer">
+                            <input id="firstOption" type="text" placeholder="First option">
+                            <input id="secondOption" type="text" placeholder="Second option">
+                            <input id="thirdOption" type="text" placeholder="Third option">
+                            <a data-role="button" id="buttonMoveToStep4" onclick="moveToStep4()">Next</a>
+                        </fieldset>
+                    </div><a data-role="button" data-rel="back">Back</a>
+                </div>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
+
+
+
+            <div id="step4" data-role="page">
+                <header data-role="header">
+                    <h1>Name The Friend</h1>
+                </header>
+                <div id="step4"></div>
+                <div id="addgeoLocation">
+                    <h1  id="addGeoLocationHeadLine">Add Geo-location as a hint</h1>
+                    <p id="geoLocationHolder">Click to get your position:</p>
+                    <div id="mapholder" src=""></div>			
+                    <a data-role="button" id="buttonAddGeoLocation" 		  onclick="addCurrentGeoLocation()">Add Current GeoLocation</a>                    
+                    <a data-role="button" id="buttonLoadPreviousGeoLocation" onclick="loadPreviousGeoLocation()">Choose last saved GeoLocation</a> 
+                    <a data-role="button" id="buttonMoveToStep5" 		  onclick="moveToStep5()">Next</a>
+                </div>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
+
+
+            <div id="step5" data-role="page">
+                <header data-role="header">
+                    <h1>Name The Friend</h1>
+                </header>
+                <div id="step5"></div>
+                <div id="instructions">
+                    <h1>The game was sent successfully</h1>
+                </div>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
+
+
+            <div id="yourTurn" data-role="page">
+                <header data-role="header">
+                    <h1>Name The Friend</h1>
+                </header>
+                <div id="guessPersonInPicture">
+                    <h1>Guess the Person in the picture</h1>
+                </div>
+                <div id="answers" align="center"><img id="blurredImage" src="" height="450" width="450">
+                    <a id="showHint"> Get Hint!</a>
+                    <table width="100%">
+                        <tr>
+                            <td width="45%">
+                                <input id="option1" type="submit" value="" onclick="checkAnswer(this.value)">
+                            </td>
+                            <td width="10%"></td>
+                            <td width="45%">
+                                <input id="option2" type="submit" value="" onclick="checkAnswer(this.value)">
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="45%">
+                                <input id="option3" type="submit" value="" onclick="checkAnswer(this.value)">
+                            </td>
+                            <td width="10%"></td>
+                            <td width="45%">
+                                <input id="option4" type="submit" value="" onclick="checkAnswer(this.value)">
+                                <input id="matchupId" type="hidden" value="">
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
+            <div id="hallOfFame" data-role="page" data-position="fixed">
+                <header data-role="header">
+                    <h1>Name The Friend</h1>
+                </header>
+                <div id="hallOfFameBar" align="center"></div><a data-role="button" data-rel="back"> Back </a>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone(false);">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
+            <div id="EndGame" data-role="page">
+                <header data-role="header">
+                    <a id="messageAfterGuess" ></a>
+                    <h1>Name The Friend</h1><img id="originalImage" src="" height="400" width="350"><br><br><br>
+                </header>
+                <footer data-role="footer" data-position="fixed">
+                    <div data-role="navbar">
+                        <ul>
+                            <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
+                            <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
+                            <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
+                        </ul>
+                    </div>
+                </footer>
+            </div>
         </div>
-        <div id="answers" align="center"><img id="blurredImage" src="" height="450" width="450">
-			<a id="showHint"> Get Hint  </a>
-          <table width="100%">
-            <tr>
-              <td width="45%">
-                <input id="option1" type="submit" value="" onclick="checkAnswer(this.value)">
-              </td>
-              <td width="10%"></td>
-              <td width="45%">
-                <input id="option2" type="submit" value="" onclick="checkAnswer(this.value)">
-              </td>
-            </tr>
-            <tr>
-              <td width="45%">
-                <input id="option3" type="submit" value="" onclick="checkAnswer(this.value)">
-              </td>
-              <td width="10%"></td>
-              <td width="45%">
-                <input id="option4" type="submit" value="" onclick="checkAnswer(this.value)">
-                <input id="matchupId" type="hidden" value="">
-              </td>
-            </tr>
-          </table>
-        </div>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-      <div id="hallOfFame" data-role="page">
-        <header data-role="header">
-          <h1>Name The Friend</h1>
-        </header>
-        <div id="hallOfFameBar" align="center"></div><a data-role="button" data-rel="back"> Back </a>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone(false);">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-      <div id="EndGame" data-role="page">
-        <header data-role="header">
-		<a id="messageAfterGuess" ></a>
-        <h1>Name The Friend</h1><img id="originalImage" src="" height="400" width="350"><br><br><br>
-        </header>
-        <footer data-role="footer">
-          <div data-role="navbar">
-            <ul>
-              <li><a id="inviteFriends" data-role="button" onclick="showMatchups()"><font size="4">MatchUp Table</font></a></li>
-              <li><a id="inviteFriends" data-role="button" onclick="showFriendsZone();">New Game</a></li>
-              <li><a data-role="button" onclick="showHallOfFame()">Hall Of Fame</a></li>
-            </ul>
-          </div>
-        </footer>
-      </div>
-    </div>
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
-    <script src="/javascripts/javascript.js"></script>
-    <script src="/javascripts/blur.js"></script>
-  </body>
+        <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+        <script src="http://code.jquery.com/mobile/1.4.2/jquery.mobile-1.4.2.min.js"></script>
+        <script src="javascripts/javascript.js"></script>
+        <script src="javascripts/blur.js"></script>
+    </body>
 </html>
